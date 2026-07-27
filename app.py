@@ -6,7 +6,6 @@ from typing import Optional, Tuple
 import numpy as np
 import streamlit as st
 from PIL import Image
-from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from image_processing import (
     validate_file_extension,
