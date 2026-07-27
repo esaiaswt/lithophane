@@ -18,6 +18,10 @@ def render_stl_preview(stl_bytes: bytes, height: int = 400) -> None:
     """
     try:
         stl_from_text(text=stl_bytes, height=height)
+        st.caption(
+            "🖱️ **Controls:** Left-click + drag to rotate · "
+            "Right-click + drag to pan · Scroll wheel to zoom"
+        )
     except Exception:
         st.warning(
             "3D preview could not be rendered. "
