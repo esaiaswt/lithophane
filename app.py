@@ -13,6 +13,7 @@ from image_processing import (
     load_image,
     resize_image,
     convert_to_grayscale,
+    enhance_contrast,
     compute_thickness_map,
 )
 from stl_generation import create_stl_mesh, export_stl
@@ -40,6 +41,38 @@ def render_dimension_controls() -> Tuple[float, float]:
             "Height (mm)", min_value=1.0, value=100.0, step=1.0
         )
     return (width_mm, height_mm)
+
+
+def render_resolution_slider() -> float:
+    """Render resolution slider, return pixels_per_mm value."""
+    pixels_per_mm = st.slider(
+        "Resolution (pixels/mm)",
+        min_value=1.0,
+        max_value=10.0,
+        value=3.0,
+        step=0.5,
+        help="Higher values produce sharper detail but larger STL files. "
+             "3-5 recommended for photos with fine detail."
+    )
+    return pixels_per_mm
+
+
+def render_contrast_selector() -> str:
+    """Render contrast enhancement selector, return method name."""
+    method = st.selectbox(
+        "Contrast Enhancement",
+        options=["None", "Histogram Stretch", "Histogram Equalization"],
+        index=1,
+        help="Enhances image contrast before thickness mapping. "
+             "'Histogram Stretch' spreads pixel values to full 0-255 range. "
+             "'Histogram Equalization' redistributes intensity for maximum contrast."
+    )
+    method_map = {
+        "None": "none",
+        "Histogram Stretch": "histogram_stretch",
+        "Histogram Equalization": "clahe",
+    }
+    return method_map[method]
 
 
 def render_format_selector() -> str:
@@ -77,6 +110,8 @@ def main() -> None:
 
     uploaded_file = render_upload_section()
     width_mm, height_mm = render_dimension_controls()
+    pixels_per_mm = render_resolution_slider()
+    contrast_method = render_contrast_selector()
     stl_format = render_format_selector()
 
     if uploaded_file is not None:
@@ -100,7 +135,7 @@ def main() -> None:
 
         try:
             # Resize image
-            resized = resize_image(image, width_mm, height_mm)
+            resized = resize_image(image, width_mm, height_mm, pixels_per_mm)
         except Exception as e:
             st.error(f"Failed to resize image: {e}")
             return
@@ -113,8 +148,15 @@ def main() -> None:
             return
 
         try:
+            # Enhance contrast
+            enhanced = enhance_contrast(grayscale, method=contrast_method)
+        except Exception as e:
+            st.error(f"Failed to enhance contrast: {e}")
+            return
+
+        try:
             # Compute thickness map
-            thickness_map = compute_thickness_map(grayscale)
+            thickness_map = compute_thickness_map(enhanced)
         except ValueError as e:
             st.error(f"Failed to compute thickness map: {e}")
             return

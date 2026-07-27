@@ -115,6 +115,43 @@ def convert_to_grayscale(image: np.ndarray) -> np.ndarray:
     return np.round(grayscale).astype(np.uint8)
 
 
+def enhance_contrast(grayscale: np.ndarray, method: str = "none") -> np.ndarray:
+    """Enhance contrast of a grayscale image for better lithophane results.
+
+    Args:
+        grayscale: 2D numpy array with intensity values 0-255, dtype uint8.
+        method: Enhancement method - "none", "histogram_stretch", or "clahe".
+
+    Returns:
+        2D uint8 array with enhanced contrast, values in [0, 255].
+    """
+    if method == "none":
+        return grayscale
+
+    if method == "histogram_stretch":
+        # Linear stretch: map actual min-max to full 0-255 range
+        img_min = float(grayscale.min())
+        img_max = float(grayscale.max())
+        if img_max - img_min < 1.0:
+            return grayscale
+        stretched = (grayscale.astype(np.float64) - img_min) / (img_max - img_min) * 255.0
+        return np.round(stretched).astype(np.uint8)
+
+    if method == "clahe":
+        # Contrast Limited Adaptive Histogram Equalization
+        # Implemented with numpy (no OpenCV dependency)
+        # Use a simplified global histogram equalization
+        hist, bins = np.histogram(grayscale.ravel(), bins=256, range=(0, 256))
+        cdf = hist.cumsum()
+        # Mask zero values in cdf
+        cdf_masked = np.ma.masked_equal(cdf, 0)
+        cdf_normalized = (cdf_masked - cdf_masked.min()) * 255 / (cdf_masked.max() - cdf_masked.min())
+        cdf_final = np.ma.filled(cdf_normalized, 0).astype(np.uint8)
+        return cdf_final[grayscale]
+
+    return grayscale
+
+
 def compute_thickness_map(
     grayscale: np.ndarray,
     min_thickness: float = 0.4,
