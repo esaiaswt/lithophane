@@ -1,0 +1,8 @@
+# Development dependencies (not needed for cloud deployment)
+-r requirements.txt
+psutil
+keyboard
+python-dotenv
+pytest
+hypothesis
+pytest-cov
