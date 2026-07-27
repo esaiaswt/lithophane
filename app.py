@@ -17,7 +17,7 @@ from image_processing import (
 )
 from stl_generation import create_stl_mesh, export_stl
 from preview import render_stl_preview
-from utils import generate_output_filename, validate_dimensions, shutdown_app
+from utils import generate_output_filename, validate_dimensions
 
 
 def render_upload_section() -> Optional[UploadedFile]:
@@ -70,18 +70,10 @@ def render_results(original_image: np.ndarray, stl_bytes: bytes, filename: str) 
     )
 
 
-def render_shutdown_button() -> None:
-    """Render shutdown button in the sidebar. Calls shutdown_app() when clicked."""
-    if st.sidebar.button("Shutdown App"):
-        shutdown_app()
-
-
 def main() -> None:
     """Entry point. Configures page, renders UI, orchestrates pipeline."""
     st.set_page_config(page_title="Lithophane Generator", layout="wide")
     st.title("Lithophane Generator")
-
-    render_shutdown_button()
 
     uploaded_file = render_upload_section()
     width_mm, height_mm = render_dimension_controls()

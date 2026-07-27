@@ -1,6 +1,12 @@
 # Lithophane Generator
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://lithophane.streamlit.app/)
+
 A Streamlit web application that converts 2D images into 3D-printable lithophane STL files. A lithophane varies material thickness so that when backlit, thinner areas appear brighter and thicker areas appear darker, recreating the original image in light and shadow.
+
+**Live App:** https://lithophane.streamlit.app/
+
+**Built with [AWS Kiro](https://kiro.dev) using Spec-Driven Development** — requirements, design, and implementation tasks were systematically generated and executed through Kiro's structured spec workflow.
 
 ## Features
 
@@ -10,7 +16,6 @@ A Streamlit web application that converts 2D images into 3D-printable lithophane
 - Watertight STL mesh generation (binary or ASCII format)
 - Interactive side-by-side 3D preview with rotate, zoom, and pan
 - One-click STL download with auto-generated filename
-- Graceful application shutdown button
 
 ## Prerequisites
 
@@ -62,8 +67,6 @@ This will open the Lithophane Generator in your default browser. From there:
 4. View the side-by-side comparison of your original image and the 3D lithophane preview
 5. Download the generated STL file for 3D printing
 
-To stop the application, click the "Shutdown App" button in the UI or press `Ctrl+C` in the terminal.
-
 ## Project Structure
 
 ```
@@ -104,8 +107,6 @@ The application follows a strictly functional programming style with no classes.
 - **NumPy** — Array operations for thickness mapping and vertex generation
 - **numpy-stl** — STL mesh creation and file export
 - **streamlit-stl** — Interactive 3D STL viewer
-- **psutil + keyboard** — Graceful application shutdown
-- **python-dotenv** — Environment variable management
 
 ## Testing
 
@@ -131,17 +132,17 @@ Tests include unit tests for specific scenarios and property-based tests using H
 
 ## Cloud Deployment (Streamlit Community Cloud)
 
-This app is ready to deploy on [Streamlit Community Cloud](https://share.streamlit.io):
+This app is deployed at https://lithophane.streamlit.app/
 
-1. Push this repository to GitHub
+To deploy your own instance:
+
+1. Fork this repository on GitHub
 2. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub
-3. Click "New app" and select this repository
+3. Click "New app" and select the forked repository
 4. Set the main file path to `app.py`
 5. Deploy
 
-The `requirements.txt` contains only production dependencies. The shutdown button gracefully degrades in cloud environments (uses `st.stop()` instead of process termination).
-
-**Note:** The `keyboard` and `psutil` libraries are optional — they enable local shutdown functionality but are not required for cloud deployment.
+The `requirements.txt` contains only production dependencies needed for cloud deployment.
 
 ## License
 
