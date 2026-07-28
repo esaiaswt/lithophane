@@ -12,10 +12,44 @@ A Streamlit web application that converts 2D images into 3D-printable lithophane
 
 - Upload .jpg, .jpeg, or .png images
 - Configure target physical dimensions (default 100mm × 100mm)
+- Adjustable mesh resolution (1–10 pixels/mm) for detail control
+- Contrast enhancement (Histogram Stretch or Histogram Equalization)
 - Automatic grayscale conversion and thickness mapping
 - Watertight STL mesh generation (binary or ASCII format)
 - Interactive side-by-side 3D preview with rotate, zoom, and pan
 - One-click STL download with auto-generated filename
+
+## Resolution (Pixels/mm)
+
+The resolution slider controls how many mesh vertices represent each millimeter of the physical print. Higher values capture finer detail but produce larger STL files.
+
+| Resolution | Grid size (100mm print) | Detail | STL size | Best for |
+|---|---|---|---|---|
+| 1 px/mm | 100×100 | Low | ~200 KB | Simple graphics, icons |
+| 3 px/mm | 300×300 | Good | ~2 MB | FDM printers, photos |
+| 5 px/mm | 500×500 | High | ~5 MB | Resin printers, fine detail |
+| 10 px/mm | 1000×1000 | Maximum | ~20 MB | Overkill for most cases |
+
+**Recommended:** 3 pixels/mm matches the physical capability of a standard 0.4mm FDM nozzle. Going higher than 5 won't improve the printed result on FDM — the printer can't reproduce sub-nozzle detail. Use 5+ only for resin printers.
+
+## Contrast Enhancement
+
+Contrast enhancement improves the tonal range of the image before it's mapped to thickness, resulting in sharper and more visually distinct lithophanes when backlit.
+
+**Histogram Stretch** (recommended for most cases):
+- Maps the image's actual darkest pixel to full 2.0mm thickness and lightest to 0.4mm
+- Preserves the relative tonal relationships — gradients stay smooth and proportional
+- Best for photos, portraits, and landscapes where subtle tonal transitions create depth
+
+**Histogram Equalization:**
+- Redistributes intensity values to be more uniform across the full 0–255 range
+- Maximizes overall contrast but can flatten subtle gradients (like skin tones)
+- May exaggerate noise in uniform areas and create a harsher look when backlit
+- Better suited for images with very narrow dynamic range or high-contrast graphic artwork
+
+**None:**
+- Uses raw image intensity as-is with no enhancement
+- Use when the source image already has optimal contrast
 
 ## Prerequisites
 
