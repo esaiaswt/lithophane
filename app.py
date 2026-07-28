@@ -81,15 +81,15 @@ def render_format_selector() -> str:
 
 
 def render_mirror_checkbox() -> bool:
-    """Render mirror (horizontal flip) checkbox, return True if enabled."""
-    mirror = st.checkbox(
-        "Mirror image (horizontal flip)",
+    """Render 'View from Smooth side' checkbox, return True if enabled."""
+    view_smooth = st.checkbox(
+        "View from Smooth side",
         value=True,
-        help="Flip the image horizontally so the lithophane reads correctly "
-             "when viewed from behind with backlighting. Uncheck if your image "
-             "is already mirrored or you want to view it from the front."
+        help="When checked, the STL is mirrored so the image appears correct "
+             "when viewing the lithophane from the smooth (flat) back side with "
+             "backlighting. Uncheck to view from the textured front side."
     )
-    return mirror
+    return view_smooth
 
 
 def render_results(original_image: np.ndarray, stl_bytes: bytes, filename: str) -> None:
@@ -145,13 +145,15 @@ def main() -> None:
             st.error(f"Failed to load image: {e}")
             return
 
-        # Mirror image horizontally if enabled
-        if mirror_image:
-            image = np.fliplr(image)
+        # Keep original for display (never flipped)
+        display_image = image
+
+        # Apply horizontal flip for STL processing if "View from Smooth side" is checked
+        process_image = np.fliplr(image) if mirror_image else image
 
         try:
             # Resize image
-            resized = resize_image(image, width_mm, height_mm, pixels_per_mm)
+            resized = resize_image(process_image, width_mm, height_mm, pixels_per_mm)
         except Exception as e:
             st.error(f"Failed to resize image: {e}")
             return
@@ -193,7 +195,7 @@ def main() -> None:
 
         # Generate output filename and render results
         filename = generate_output_filename(uploaded_file.name)
-        render_results(image, stl_bytes, filename)
+        render_results(display_image, stl_bytes, filename)
 
 
 if __name__ == "__main__":
