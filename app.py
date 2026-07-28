@@ -20,7 +20,7 @@ from preview import render_stl_preview
 from utils import generate_output_filename, validate_dimensions
 
 
-def render_upload_section() -> Optional[UploadedFile]:
+def render_upload_section():
     """Render file uploader, return uploaded file or None."""
     uploaded_file = st.file_uploader(
         "Upload an image", type=["jpg", "jpeg", "png"]
@@ -80,6 +80,18 @@ def render_format_selector() -> str:
     return choice.lower()
 
 
+def render_mirror_checkbox() -> bool:
+    """Render mirror (horizontal flip) checkbox, return True if enabled."""
+    mirror = st.checkbox(
+        "Mirror image (horizontal flip)",
+        value=True,
+        help="Flip the image horizontally so the lithophane reads correctly "
+             "when viewed from behind with backlighting. Uncheck if your image "
+             "is already mirrored or you want to view it from the front."
+    )
+    return mirror
+
+
 def render_results(original_image: np.ndarray, stl_bytes: bytes, filename: str) -> None:
     """Render side-by-side comparison of original image and 3D preview, plus download button.
 
@@ -111,6 +123,7 @@ def main() -> None:
     width_mm, height_mm = render_dimension_controls()
     pixels_per_mm = render_resolution_slider()
     contrast_method = render_contrast_selector()
+    mirror_image = render_mirror_checkbox()
     stl_format = render_format_selector()
 
     if uploaded_file is not None:
@@ -131,6 +144,10 @@ def main() -> None:
         except ValueError as e:
             st.error(f"Failed to load image: {e}")
             return
+
+        # Mirror image horizontally if enabled
+        if mirror_image:
+            image = np.fliplr(image)
 
         try:
             # Resize image
