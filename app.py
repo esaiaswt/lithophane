@@ -81,15 +81,15 @@ def render_format_selector() -> str:
 
 
 def render_mirror_checkbox() -> bool:
-    """Render 'View from Smooth side' checkbox, return True if enabled."""
-    view_smooth = st.checkbox(
-        "View from Smooth side",
+    """Render 'View from Texture side' checkbox, return True if enabled."""
+    view_texture = st.checkbox(
+        "View from Texture side",
         value=True,
-        help="When checked, the STL is mirrored so the image appears correct "
-             "when viewing the lithophane from the smooth (flat) back side with "
-             "backlighting. Uncheck to view from the textured front side."
+        help="When checked, the STL is generated so the image appears correct "
+             "when viewing the lithophane from the textured (front) side. "
+             "Uncheck to flip the image for viewing from the smooth (back) side."
     )
-    return view_smooth
+    return view_texture
 
 
 def render_results(original_image: np.ndarray, stl_bytes: bytes, filename: str) -> None:
