@@ -148,8 +148,9 @@ def main() -> None:
         # Keep original for display (never flipped)
         display_image = image
 
-        # Apply horizontal flip for STL processing if "View from Smooth side" is checked
-        process_image = np.fliplr(image) if mirror_image else image
+        # Flip horizontally for STL when "View from Smooth side" is checked
+        # so the image reads correctly when viewing the lithophane from the back
+        process_image = np.fliplr(image).copy() if mirror_image else image
 
         try:
             # Resize image
